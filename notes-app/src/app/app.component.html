@@ -1,0 +1,75 @@
+<body style="margin: 0;">
+  <div class="main-container">
+    <div class="notes-container">
+      <h1>Список заметок:</h1>
+      <div class="action-buttons">
+        <button class="btn create-note-btn" (click)="toggleForm()">Создать заметку</button>
+        <button class="btn create-tag-btn" (click)="showTagForm = !showTagForm">Создать тег</button>
+      </div>
+
+      <div *ngIf="showTagForm" class="form-container">
+        <h2>Создать тег</h2>
+        <input type="text" placeholder="Название тега" [(ngModel)]="newTagName" />
+        <button class="btn" (click)="addTag()">Добавить тег</button>
+        <button class="btn" (click)="showTagForm = false">Отмена</button>
+      </div>
+
+      <div *ngIf="showForm" class="form-container">
+        <h2>{{ editingNote ? 'Редактировать заметку' : 'Создать заметку' }}</h2>
+        <input type="text" placeholder="Название" [(ngModel)]="newNote.title" />
+        <div *ngIf="titleRequired" class="error-message">Название обязательно.</div>
+        <textarea placeholder="Содержимое" [(ngModel)]="newNote.content"></textarea>
+        <div *ngIf="contentRequired" class="error-message">Содержимое обязательно.</div>
+
+        <div class="date-container">
+          <label>Дата:</label>
+          <input type="date" [(ngModel)]="newNote.date" />
+          <div *ngIf="dateRequired" class="error-message">Дата обязательна.</div>
+          <label>Время:</label>
+          <input type="time" [(ngModel)]="newNote.time" />
+          <div *ngIf="timeRequired" class="error-message">Время обязательно.</div>
+        </div>
+
+        <div class="tags-container">
+          <label class="tags-label">Установить тег:</label>
+          <select class="tags-select" [(ngModel)]="newNote.tags" multiple>
+            <option *ngFor="let tag of tags" [value]="tag.id" >{{ tag.name }}</option>
+          </select>
+          <div *ngIf="tagsRequired" class="error-message">Необходимо выбрать хотя бы один тег.</div>
+        </div>
+
+        <button class="btn" 
+                [disabled]="!newNote.title || !newNote.content || !newNote.date || !newNote.time || newNote.tags.length === 0" 
+                (click)="editingNote ? updateNote() : addNote()">
+          {{ editingNote ? 'Обновить заметку' : 'Добавить заметку' }}
+        </button>
+        <button class="btn" (click)="cancelEditing()">Отмена</button>
+      </div>
+
+      <ul>
+        <li *ngFor="let note of notes" class="note-item">
+          <h2 class="note-title">{{ note.title }}</h2>
+          <p class="note-content">{{ note.content }}</p>
+          <small class="note-date">Запланировано на: {{ note?.date | date: 'dd.MM.yyyy' }} {{ note.time }}</small>
+          <div class="note-tags">
+            Теги: <span *ngFor="let tag of note.tags" class="tag">{{ tag }} </span>
+          </div>
+          <div class="note-actions">
+            <button class="btn edit-btn" (click)="editNote(note)">Редактировать</button>
+            <button class="btn delete-btn" (click)="deleteNote(note)">Удалить</button>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="reminders-container">
+      <h2>Напоминания:</h2>
+      <ul>
+        <li *ngFor="let reminder of reminders" class="reminder-item">
+          <p class="description">{{ reminder.description }}</p>
+          <small> {{ reminder.reminder_date | date: 'dd.MM.yyyy HH:mm' }}</small>
+        </li>
+      </ul>
+    </div>
+  </div>
+</body>
